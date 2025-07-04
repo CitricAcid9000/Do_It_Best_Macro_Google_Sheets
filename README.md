@@ -17,7 +17,7 @@ a macro for do it bess catelog for easy modifing in google sheets for the year 2
 14. download spreadsheet as .csv
 15. go back to Doit cart and bulk upload the new .csv
 
-## recommendation
+## Recommendation
 
 - after set up make one master google sheet and a backup sheet in case one get deleted
 - the macro will only work in google sheets that the macro was put in and not in any new google sheet unless you copy the original sheet
