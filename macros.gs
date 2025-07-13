@@ -43,6 +43,15 @@ function Format() {
   spreadsheet.getCurrentCell().setFormula('=ARRAYFORMULA(B2*D2)');
   spreadsheet.getActiveRange().autoFill(spreadsheet.getRange('I2:I'+final), SpreadsheetApp.AutoFillSeries.DEFAULT_SERIES);
   
+  // changing the 0 member retial stuff to suggested retail price because Do It Bess catlog puts those as nothing if you modified their prices in the last 30 days
+  var storedValue = 0;
+  for (let i = 2; i < final; i++) {
+    if (spreadsheet.getRange("F"+i).isBlank()) {
+      storedValue = spreadsheet.getRange('E'+i).getValue();
+      spreadsheet.getRange("F"+i).setValue(storedValue);
+    }
+  }
+
   // symbols adder making them dollars and percents
   spreadsheet.getRangeList(['D1:G', 'I:I', 'J2', 'J5', 'J8']).activate()
   .setNumberFormat('"$"#,##0.00');
@@ -139,11 +148,18 @@ function Format() {
   spreadsheet.getActiveRangeList().setBackground('#b6d7a8');
   spreadsheet.getRange('A1:I'+final).createFilter();
 
+  // create saved version of member retail
+  spreadsheet.getRange('U:U').activate();
+  spreadsheet.getRange('F:F').copyTo(spreadsheet.getActiveRange(), SpreadsheetApp.CopyPasteType.PASTE_NORMAL, false);
+  spreadsheet.getRange('U1').setValue("DO NOT CHANGE")
+  spreadsheet.getActiveRangeList().setHorizontalAlignment('center');
+
   // all column changes
   spreadsheet.getRange('A:J').activate();
   spreadsheet.getActiveRangeList().setHorizontalAlignment('center');
-  spreadsheet.getActiveRangeList().setFontSize(12)
+  spreadsheet.getActiveRangeList().setFontSize(12);
   spreadsheet.getActiveSheet().autoResizeColumns(1, 10);
+  spreadsheet.getActiveSheet().autoResizeColumn(21);
 
   // protect this area from mistakes
   var protection = spreadsheet.getRange('A1:J1').protect();
@@ -154,13 +170,11 @@ function Format() {
   protection.setDescription('Formulas Do Not Change').setWarningOnly(true);
   protection = spreadsheet.getRange('C2:E').protect();
   protection.setDescription('Formulas Do Not Change').setWarningOnly(true);
+  protection = spreadsheet.getRange('U:U').protect();
+  protection.setDescription('Do Not Change').setWarningOnly(true);
 
   //freeze rows
   spreadsheet.getActiveSheet().setFrozenRows(1);
-
-  // create saved version of member retail
-  spreadsheet.getRange('U:U').activate();
-  spreadsheet.getRange('F:F').copyTo(spreadsheet.getActiveRange(), SpreadsheetApp.CopyPasteType.PASTE_NORMAL, false);
   
   var name = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName();
   ExportFormat_();
