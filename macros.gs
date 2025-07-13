@@ -1,10 +1,10 @@
-// menu ui
 function onOpen() {
   var ui = SpreadsheetApp.getUi();
+  // Or DocumentApp, SlidesApp or FormApp.
   ui.createMenu('Macro Menu')
-      .addItem('Format', 'Format')
+      .addItem('1 - Format', 'Format')
       .addSeparator()
-      .addItem('Remove0QTY', 'Remove0QTY')
+      .addItem('2 - DownloadFormat', 'Cleanup')
       .addToUi();
 }
 
@@ -158,7 +158,14 @@ function Format() {
   //freeze rows
   spreadsheet.getActiveSheet().setFrozenRows(1);
 
+  // create saved version of member retail
+  spreadsheet.getRange('U:U').activate();
+  spreadsheet.getRange('F:F').copyTo(spreadsheet.getActiveRange(), SpreadsheetApp.CopyPasteType.PASTE_NORMAL, false);
+  
+  var name = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName();
   ExportFormat_();
+  spreadsheet.setActiveSheet(spreadsheet.getSheetByName(name), true);
+  spreadsheet.getRange('A:A').activate();
 }
 
 function ExportFormat_() {
@@ -166,14 +173,13 @@ function ExportFormat_() {
   var name = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName();
   var final = spreadsheet.getDataRange().getLastRow();
   spreadsheet.getRange('F:F').activate();
-  if(!spreadsheet.getSheetByName("SendSheet"))
+  if(!spreadsheet.getSheetByName("SendSheet - .CSV"))
   {
-    spreadsheet.insertSheet('SendSheet');
-    spreadsheet.getRange('A1:C').createFilter();
+    spreadsheet.insertSheet('SendSheet - .CSV');
   }
 
   // make the data refrence the original file
-  spreadsheet.setActiveSheet(spreadsheet.getSheetByName('SendSheet'), true);
+  spreadsheet.setActiveSheet(spreadsheet.getSheetByName('SendSheet - .CSV'), true);
   spreadsheet.getRange('A1').activate();
   spreadsheet.getCurrentCell().setFormula("='" + name + "'!A1");
   spreadsheet.getActiveRange().autoFill(spreadsheet.getRange('A1:A'+final), SpreadsheetApp.AutoFillSeries.DEFAULT_SERIES);
@@ -194,11 +200,23 @@ function ExportFormat_() {
   // get rid of formating
   spreadsheet.getRange('A:C').activate();
   spreadsheet.getActiveRangeList().setNumberFormat('General');
+
+  // protecting from deletion or modification in case people accidently do it
+  var protection = spreadsheet.getRange('A:C').protect();
+  protection.setDescription('Do Not Change').setWarningOnly(true);
 };
 
-function Remove0QTY(){
+function Cleanup(){
+  Remove0QTY_();
+  RockSolidSendSheet_();
+};
+
+function Remove0QTY_(){
+  var name = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName();
   var spreadsheet = SpreadsheetApp.getActive();
   var final = spreadsheet.getDataRange().getLastRow();
+
+  spreadsheet.setActiveSheet(spreadsheet.getSheetByName('SendSheet - .CSV'), true);
 
   // delete rows with 0 quatity
   const values = spreadsheet.getRange("B1:B" + final).getValues();
@@ -212,7 +230,58 @@ function Remove0QTY(){
     spreadsheet.deleteRow(rowsToDelete[j]); 
   }
 
-  //if Brendan wants we could delete all blank things for the import also delete any zeros
+  // sorting the skus to get rid of options that haven't changed
+  spreadsheet.getRange('A:C').createFilter();
   spreadsheet.getRange('A1').activate();
   spreadsheet.getActiveSheet().getFilter().sort(1, true);
+  spreadsheet.getRange('A:C').activate();
+  spreadsheet.getActiveSheet().getFilter().remove();
+
+  spreadsheet.setActiveSheet(spreadsheet.getSheetByName(name), true);
 }
+
+function RockSolidSendSheet_(){
+  var spreadsheet = SpreadsheetApp.getActive();
+  var name = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName();
+  var final = spreadsheet.getDataRange().getLastRow();
+  if(!spreadsheet.getSheetByName("RockSolidSendSheet - .XLSX"))
+  {
+    spreadsheet.insertSheet('RockSolidSendSheet - .XLSX');
+  }
+
+  // make the data refrence the original file
+  spreadsheet.setActiveSheet(spreadsheet.getSheetByName('RockSolidSendSheet - .XLSX'), true);
+
+  spreadsheet.getRange('A1').activate();
+  spreadsheet.getCurrentCell().setValue("SKU");
+  spreadsheet.getRange('B1').activate();
+  spreadsheet.getCurrentCell().setValue('MemberRetail');
+
+  spreadsheet.getRange('A2').activate();
+  spreadsheet.getCurrentCell().setFormula("=IF(EXACT('"+ name + "'!F2, '"+ name +"'!U2),"+ '" "' + ", '" + name+"'!A2)");
+  spreadsheet.getActiveRange().autoFill(spreadsheet.getRange('A2:A'+final), SpreadsheetApp.AutoFillSeries.DEFAULT_SERIES);
+
+  spreadsheet.getRange('B2').activate();
+  spreadsheet.getCurrentCell().setFormula("=IF(EXACT('"+ name + "'!F2, '"+ name +"'!U2),"+ '" "' + ", '" + name+"'!F2)");
+  spreadsheet.getActiveRange().autoFill(spreadsheet.getRange('B2:B'+final), SpreadsheetApp.AutoFillSeries.DEFAULT_SERIES);
+
+  // get rid of formating
+  spreadsheet.getRange('A:B').activate();
+  spreadsheet.getActiveRangeList().setNumberFormat('General');
+  
+  // sorting the skus to get rid of options that haven't changed
+  spreadsheet.getRange('A:B').createFilter();
+  spreadsheet.getRange('A1').activate();
+  spreadsheet.getActiveSheet().getFilter().sort(1, true);
+  spreadsheet.getRange('A:B').activate();
+  spreadsheet.getActiveSheet().getFilter().remove();
+
+  // resize the columns
+  spreadsheet.getActiveSheet().autoResizeColumns(1, 2);
+
+  // protecting the sheet in case people accidently delete
+  var protection = spreadsheet.getRange('A:B').protect();
+  protection.setDescription('Do Not Change').setWarningOnly(true);
+
+  spreadsheet.setActiveSheet(spreadsheet.getSheetByName(name), true);
+};
