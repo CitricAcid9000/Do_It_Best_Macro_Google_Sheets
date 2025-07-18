@@ -2,9 +2,9 @@ function onOpen() {
   var ui = SpreadsheetApp.getUi();
   // Or DocumentApp, SlidesApp or FormApp.
   ui.createMenu('Macro Menu')
-      .addItem('1 - Format', 'Format')
+      .addItem('1 - Editing Format', 'Format')
       .addSeparator()
-      .addItem('2 - DownloadFormat', 'Cleanup')
+      .addItem('2 - Post-Editing Format', 'Cleanup')
       .addToUi();
 }
 
@@ -102,36 +102,36 @@ function Format() {
   spreadsheet.getActiveSheet().setConditionalFormatRules(conditionalFormatRules);
 
   // creating totals
-  spreadsheet.getRange('J2').activate();
+  spreadsheet.getRange('K2').activate();
   spreadsheet.getCurrentCell().setValue('Total Extended Cost');
-  spreadsheet.getRange('J3').activate();
+  spreadsheet.getRange('K3').activate();
   spreadsheet.getCurrentCell().setFormula('=Sum(I:I)');
-  spreadsheet.getRange('J5').activate();
+  spreadsheet.getRange('K5').activate();
   spreadsheet.getCurrentCell().setValue('Gross Sales');
-  spreadsheet.getRange('J6').activate();
+  spreadsheet.getRange('K6').activate();
   spreadsheet.getCurrentCell().setFormula('=SUMPRODUCT(B2:B, F2:F)');
-  spreadsheet.getRange('J8').activate();
+  spreadsheet.getRange('K8').activate();
   spreadsheet.getCurrentCell().setValue('Net Profit');
-  spreadsheet.getRange('J9').activate();
+  spreadsheet.getRange('K9').activate();
   spreadsheet.getCurrentCell().setFormula('=Sum(J6-J3)');
-  spreadsheet.getRange('J11').activate();
+  spreadsheet.getRange('K11').activate();
   spreadsheet.getCurrentCell().setValue('Total SKUs');
-  spreadsheet.getRange('J12').activate();
+  spreadsheet.getRange('K12').activate();
   spreadsheet.getCurrentCell().setFormula('=COUNTA(B2:B) - COUNTIF(B2:B, 0)');
   
   // total/sum modification
-  spreadsheet.getRange('J2:J3').activate();
+  spreadsheet.getRange('K2:K3').activate();
   spreadsheet.getActiveRangeList().setBackground('#ffff00');
-  spreadsheet.getRange('J5:J6').activate();
+  spreadsheet.getRange('K5:K6').activate();
   spreadsheet.getActiveRangeList().setBackground('#6d9eeb');
-  spreadsheet.getRange('J8:J9').activate();
+  spreadsheet.getRange('K8:K9').activate();
   spreadsheet.getActiveRangeList().setBackground('#00ff00');
-  spreadsheet.getRange('J11:J12').activate();
+  spreadsheet.getRange('K11:K12').activate();
   spreadsheet.getActiveRangeList().setBackground('#fbbc04');
 
-  spreadsheet.getRangeList(['J2:J3', 'J5:J6', 'J8:J9', 'J11:J12']).activate();
+  spreadsheet.getRangeList(['K2:K3', 'K5:K6', 'K8:K9', 'K11:K12']).activate();
   spreadsheet.getActiveRangeList().setBorder(true, true, true, true, true, true, '#000000', SpreadsheetApp.BorderStyle.SOLID_MEDIUM)
-  spreadsheet.getRangeList(['J3', 'J6', 'J9', 'J12']).activate()
+  spreadsheet.getRangeList(['K3', 'K6', 'K9', 'K12']).activate()
   .setFontWeight('bold');
 
   // borders on all cells and changing color
@@ -144,37 +144,46 @@ function Format() {
   spreadsheet.getActiveRangeList().setBorder(true, true, true, true, true, true, '#000000', SpreadsheetApp.BorderStyle.SOLID_MEDIUM)
 
   // adding green background colors to the important columns
-  spreadsheet.getRangeList(['A1:B'+final,'F1:F'+final]).activate();
-  spreadsheet.getActiveRangeList().setBackground('#b6d7a8');
-  spreadsheet.getRange('A1:I'+final).createFilter();
+  spreadsheet.getRangeList(['A1:B'+final,'F1:F'+final]).setBackground('#b6d7a8');
+  spreadsheet.getRange('A1:J'+final).createFilter();
 
   // create saved version of member retail
-  spreadsheet.getRange('U:U').activate();
+  spreadsheet.getRange('J:J').activate();
   spreadsheet.getRange('F:F').copyTo(spreadsheet.getActiveRange(), SpreadsheetApp.CopyPasteType.PASTE_NORMAL, false);
-  spreadsheet.getRange('U1').setValue("DO NOT CHANGE")
-  spreadsheet.getActiveRangeList().setHorizontalAlignment('center');
+  spreadsheet.getRange('J1').setValue("Original Retail")
+  spreadsheet.getActiveRange().setHorizontalAlignment('center');
+  spreadsheet.getActiveRange().setBackground(null);  
+
+  // create the top section for the google sheet
+  spreadsheet.getRange('1:1').activate();
+  spreadsheet.getActiveSheet().insertRowsBefore(spreadsheet.getActiveRange().getRow(), 1);
+  spreadsheet.getActiveRange().offset(0, 0, 1, spreadsheet.getActiveRange().getNumColumns()).activate();
+  spreadsheet.getRangeList(['B1', 'F1']).setValue('EDIT');
+  spreadsheet.getRange('G1:I1').mergeAcross();
+  spreadsheet.getRange('G1:I1').setValue('Sort A-Z & Z-A');
+  spreadsheet.getRangeList(['B1','F1', 'G1'])
+  .setBackground('#e69138')
+  .setFontColor('#ff0000');
 
   // all column changes
-  spreadsheet.getRange('A:J').activate();
+  spreadsheet.getRange('A:K').activate();
   spreadsheet.getActiveRangeList().setHorizontalAlignment('center');
   spreadsheet.getActiveRangeList().setFontSize(12);
-  spreadsheet.getActiveSheet().autoResizeColumns(1, 10);
-  spreadsheet.getActiveSheet().autoResizeColumn(21);
+  spreadsheet.getActiveSheet().autoResizeColumns(1, 11);
+  spreadsheet.getActiveSheet().setColumnWidth(10, 15);
 
   // protect this area from mistakes
-  var protection = spreadsheet.getRange('A1:J1').protect();
+  var protection = spreadsheet.getRange('A1:K2').protect();
   protection.setDescription('Do Not Change').setWarningOnly(true);
-  protection = spreadsheet.getRange('A2:A').protect();
+  protection = spreadsheet.getRange('A3:A').protect();
   protection.setDescription('SKU Do Not Change').setWarningOnly(true);
-  protection = spreadsheet.getRange('G2:J').protect();
+  protection = spreadsheet.getRange('G3:K').protect();
   protection.setDescription('Formulas Do Not Change').setWarningOnly(true);
-  protection = spreadsheet.getRange('C2:E').protect();
+  protection = spreadsheet.getRange('C3:E').protect();
   protection.setDescription('Formulas Do Not Change').setWarningOnly(true);
-  protection = spreadsheet.getRange('U:U').protect();
-  protection.setDescription('Do Not Change').setWarningOnly(true);
 
   //freeze rows
-  spreadsheet.getActiveSheet().setFrozenRows(1);
+  spreadsheet.getActiveSheet().setFrozenRows(2);
   
   var name = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName();
   ExportFormat_();
@@ -186,7 +195,6 @@ function ExportFormat_() {
   var spreadsheet = SpreadsheetApp.getActive();
   var name = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName();
   var final = spreadsheet.getDataRange().getLastRow();
-  spreadsheet.getRange('F:F').activate();
   if(!spreadsheet.getSheetByName("SendSheet - .CSV"))
   {
     spreadsheet.insertSheet('SendSheet - .CSV');
@@ -195,17 +203,17 @@ function ExportFormat_() {
   // make the data refrence the original file
   spreadsheet.setActiveSheet(spreadsheet.getSheetByName('SendSheet - .CSV'), true);
   spreadsheet.getRange('A1').activate();
-  spreadsheet.getCurrentCell().setFormula("='" + name + "'!A1");
+  spreadsheet.getCurrentCell().setFormula("='" + name + "'!A2");
   spreadsheet.getActiveRange().autoFill(spreadsheet.getRange('A1:A'+final), SpreadsheetApp.AutoFillSeries.DEFAULT_SERIES);
   spreadsheet.getRange('B1').activate();
   spreadsheet.getCurrentCell().setValue('OrderQuantity');
   spreadsheet.getRange('B2').activate();
-  spreadsheet.getCurrentCell().setFormula("='" + name + "'!B2");
+  spreadsheet.getCurrentCell().setFormula("='" + name + "'!B3");
   spreadsheet.getActiveRange().autoFill(spreadsheet.getRange('B2:B'+final), SpreadsheetApp.AutoFillSeries.DEFAULT_SERIES);
   spreadsheet.getRange('C1').activate();
   spreadsheet.getCurrentCell().setValue('MemberRetail');
   spreadsheet.getRange('C2').activate();
-  spreadsheet.getCurrentCell().setFormula("='" + name + "'!F2");
+  spreadsheet.getCurrentCell().setFormula("='" + name + "'!F3");
   spreadsheet.getActiveRange().autoFill(spreadsheet.getRange('C2:C'+final), SpreadsheetApp.AutoFillSeries.DEFAULT_SERIES);
 
   // resize the columns
@@ -221,8 +229,14 @@ function ExportFormat_() {
 };
 
 function Cleanup(){
+  var spreadsheet = SpreadsheetApp.getActive();
+  var name = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName();
+  if(name !== "SendSheet - .CSV" && name !== 'RockSolidSendSheet - .XLSX'){
   Remove0QTY_();
   RockSolidSendSheet_();
+  }else{
+    SpreadsheetApp.getUi().alert("Please use this on the original document");
+  }
 };
 
 function Remove0QTY_(){
@@ -272,11 +286,11 @@ function RockSolidSendSheet_(){
   spreadsheet.getCurrentCell().setValue('MemberRetail');
 
   spreadsheet.getRange('A2').activate();
-  spreadsheet.getCurrentCell().setFormula("=IF(EXACT('"+ name + "'!F2, '"+ name +"'!U2),"+ '" "' + ", '" + name+"'!A2)");
+  spreadsheet.getCurrentCell().setFormula("=IF(EXACT('"+ name + "'!F3, '"+ name +"'!J3),"+ '" "' + ", '" + name+"'!A3)");
   spreadsheet.getActiveRange().autoFill(spreadsheet.getRange('A2:A'+final), SpreadsheetApp.AutoFillSeries.DEFAULT_SERIES);
 
   spreadsheet.getRange('B2').activate();
-  spreadsheet.getCurrentCell().setFormula("=IF(EXACT('"+ name + "'!F2, '"+ name +"'!U2),"+ '" "' + ", '" + name+"'!F2)");
+  spreadsheet.getCurrentCell().setFormula("=IF(EXACT('"+ name + "'!F3, '"+ name +"'!J3),"+ '" "' + ", '" + name+"'!F3)");
   spreadsheet.getActiveRange().autoFill(spreadsheet.getRange('B2:B'+final), SpreadsheetApp.AutoFillSeries.DEFAULT_SERIES);
 
   // get rid of formating
