@@ -5,6 +5,8 @@ function onOpen() {
       .addItem('1 - Editing Format', 'Format')
       .addSeparator()
       .addItem('2 - Post-Editing Format', 'Cleanup')
+      .addSeparator()
+      .addItem('3 - Download for Rocksolid', 'downloadXLS_GUI')
       .addToUi();
 }
 
@@ -229,7 +231,6 @@ function ExportFormat_() {
 };
 
 function Cleanup(){
-  var spreadsheet = SpreadsheetApp.getActive();
   var name = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName();
   if(name !== "SendSheet - .CSV" && name !== 'RockSolidSendSheet - .XLSX'){
   Remove0QTY_();
@@ -312,4 +313,18 @@ function RockSolidSendSheet_(){
   protection.setDescription('Do Not Change').setWarningOnly(true);
 
   spreadsheet.setActiveSheet(spreadsheet.getSheetByName(name), true);
+};
+
+function downloadXLS_GUI() {
+  var name = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName();
+  if(name === 'RockSolidSendSheet - .XLSX'){
+    var ssID = SpreadsheetApp.getActive().getId();
+    var gid = SpreadsheetApp.getActive().getSheetId();
+    var url = 'https://docs.google.com/spreadsheets/d/'+ssID+'/export?format=xlsx&gid='+ gid;
+    var html = '<a href="' + url + '" target="_blank" download>Download XLSX</a>';
+    SpreadsheetApp.getUi().showModalDialog(HtmlService.createHtmlOutput(html), 'Download');
+  }else{
+    SpreadsheetApp.getUi().alert("Please go to RockSolidSendSheet - .XLSX to download");
+  }
+  
 };
