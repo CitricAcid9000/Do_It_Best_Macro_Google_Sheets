@@ -5,8 +5,10 @@ function onOpen() {
       .addItem('1 - Editing Format', 'Format')
       .addSeparator()
       .addItem('2 - Post-Editing Format', 'Cleanup')
+      /*
       .addSeparator()
       .addItem('3 - Download for Rocksolid', 'downloadXLS_GUI')
+      */
       .addToUi();
 }
 
@@ -15,11 +17,9 @@ function Format() {
   var final = spreadsheet.getDataRange().getLastRow();
 
   // Move Columns
-  spreadsheet.getRange('K:K').activate();
+  spreadsheet.getRange('B:B').copyTo(spreadsheet.getRange('P:P'), SpreadsheetApp.CopyPasteType.PASTE_NORMAL, false);
   spreadsheet.getActiveSheet().moveColumns(spreadsheet.getRange('K:K'), 2);
-  spreadsheet.getRange('E:E').activate();
   spreadsheet.getActiveSheet().moveColumns(spreadsheet.getRange('E:E'), 3);
-  spreadsheet.getRange('K:K').activate();
   spreadsheet.getActiveSheet().moveColumns(spreadsheet.getRange('K:K'), 4);
   spreadsheet.getRange('E:I').activate();
   spreadsheet.getActiveSheet().deleteColumns(spreadsheet.getActiveRange().getColumn(), spreadsheet.getActiveRange().getNumColumns());
@@ -55,7 +55,7 @@ function Format() {
   }
 
   // symbols adder making them dollars and percents
-  spreadsheet.getRangeList(['D1:G', 'I:I', 'J2', 'J5', 'J8']).activate()
+  spreadsheet.getRangeList(['D1:G', 'I:I', 'L2', 'L5', 'L8']).activate()
   .setNumberFormat('"$"#,##0.00');
   spreadsheet.getRange('H:H').activate();
   spreadsheet.getActiveRangeList().setNumberFormat('0.00%');  
@@ -104,50 +104,39 @@ function Format() {
   spreadsheet.getActiveSheet().setConditionalFormatRules(conditionalFormatRules);
 
   // creating totals
-  spreadsheet.getRange('K2').activate();
-  spreadsheet.getCurrentCell().setValue('Total Extended Cost');
-  spreadsheet.getRange('K3').activate();
-  spreadsheet.getCurrentCell().setFormula('=Sum(I:I)');
-  spreadsheet.getRange('K5').activate();
-  spreadsheet.getCurrentCell().setValue('Gross Sales');
-  spreadsheet.getRange('K6').activate();
-  spreadsheet.getCurrentCell().setFormula('=SUMPRODUCT(B2:B, F2:F)');
-  spreadsheet.getRange('K8').activate();
-  spreadsheet.getCurrentCell().setValue('Net Profit');
-  spreadsheet.getRange('K9').activate();
-  spreadsheet.getCurrentCell().setFormula('=Sum(J6-J3)');
-  spreadsheet.getRange('K11').activate();
-  spreadsheet.getCurrentCell().setValue('Total SKUs');
-  spreadsheet.getRange('K12').activate();
-  spreadsheet.getCurrentCell().setFormula('=COUNTA(B2:B) - COUNTIF(B2:B, 0)');
+  spreadsheet.getRange('L2').setValue('Total Extended Cost');
+  spreadsheet.getRange('L3').setFormula('=Sum(I:I)');
+  spreadsheet.getRange('L5').setValue('Gross Sales');
+  spreadsheet.getRange('L6').setFormula('=SUMPRODUCT(B2:B, F2:F)');
+  spreadsheet.getRange('L8').setValue('Net Profit');
+  spreadsheet.getRange('L9').setFormula('=Sum(L6-L3)');
+  spreadsheet.getRange('L11').setValue('Total SKUs');
+  spreadsheet.getRange('L12').setFormula('=COUNTA(B2:B) - COUNTIF(B2:B, 0)');
   
   // total/sum modification
-  spreadsheet.getRange('K2:K3').activate();
-  spreadsheet.getActiveRangeList().setBackground('#ffff00');
-  spreadsheet.getRange('K5:K6').activate();
-  spreadsheet.getActiveRangeList().setBackground('#6d9eeb');
-  spreadsheet.getRange('K8:K9').activate();
-  spreadsheet.getActiveRangeList().setBackground('#00ff00');
-  spreadsheet.getRange('K11:K12').activate();
-  spreadsheet.getActiveRangeList().setBackground('#fbbc04');
+  spreadsheet.getRange('L2:L3').setBackground('#ffff00');
+  spreadsheet.getRange('L5:L6').setBackground('#6d9eeb');
+  spreadsheet.getRange('L8:L9').setBackground('#00ff00');
+  spreadsheet.getRange('L11:L12').setBackground('#fbbc04');
 
-  spreadsheet.getRangeList(['K2:K3', 'K5:K6', 'K8:K9', 'K11:K12']).activate();
+  spreadsheet.getRangeList(['L2:L3', 'L5:L6', 'L8:L9', 'L11:L12']).activate();
   spreadsheet.getActiveRangeList().setBorder(true, true, true, true, true, true, '#000000', SpreadsheetApp.BorderStyle.SOLID_MEDIUM)
-  spreadsheet.getRangeList(['K3', 'K6', 'K9', 'K12']).activate()
+  spreadsheet.getRangeList(['L3', 'L6', 'L9', 'L12']).activate()
   .setFontWeight('bold');
 
   // borders on all cells and changing color
-  spreadsheet.getRange('A1:I'+final).activate();
-  spreadsheet.getRange('A1:I'+final).applyRowBanding(SpreadsheetApp.BandingTheme.CYAN);
-  var banding = spreadsheet.getRange('A1:I' + final).getBandings()[0];
+  spreadsheet.getRange('A1:K'+final).activate();
+  spreadsheet.getRange('A1:K'+final).applyRowBanding(SpreadsheetApp.BandingTheme.CYAN);
+  var banding = spreadsheet.getRange('A1:K' + final).getBandings()[0];
   banding.setFirstRowColor('#ffffff')
   .setSecondRowColor('#e0f7fa')
   .setFooterRowColor(null);
   spreadsheet.getActiveRangeList().setBorder(true, true, true, true, true, true, '#000000', SpreadsheetApp.BorderStyle.SOLID_MEDIUM)
+  spreadsheet.getRange('K:K').setNumberFormat('000000000000');
 
   // adding green background colors to the important columns
   spreadsheet.getRangeList(['A1:B'+final,'F1:F'+final]).setBackground('#b6d7a8');
-  spreadsheet.getRange('A1:J'+final).createFilter();
+  spreadsheet.getRange('A1:K'+final).createFilter();
 
   // create saved version of member retail
   spreadsheet.getRange('J:J').activate();
@@ -168,18 +157,19 @@ function Format() {
   .setFontColor('#ff0000');
 
   // all column changes
-  spreadsheet.getRange('A:K').activate();
+  spreadsheet.getRange('A:L').activate();
   spreadsheet.getActiveRangeList().setHorizontalAlignment('center');
   spreadsheet.getActiveRangeList().setFontSize(12);
-  spreadsheet.getActiveSheet().autoResizeColumns(1, 11);
-  spreadsheet.getActiveSheet().setColumnWidth(10, 15);
+  spreadsheet.getActiveSheet().autoResizeColumns(1, 12);
+  spreadsheet.getActiveSheet().setColumnWidth(10, 2);
+  spreadsheet.getActiveSheet().setColumnWidth(11,2);
 
   // protect this area from mistakes
-  var protection = spreadsheet.getRange('A1:K2').protect();
+  var protection = spreadsheet.getRange('A1:L2').protect();
   protection.setDescription('Do Not Change').setWarningOnly(true);
   protection = spreadsheet.getRange('A3:A').protect();
   protection.setDescription('SKU Do Not Change').setWarningOnly(true);
-  protection = spreadsheet.getRange('G3:K').protect();
+  protection = spreadsheet.getRange('G3:L').protect();
   protection.setDescription('Formulas Do Not Change').setWarningOnly(true);
   protection = spreadsheet.getRange('C3:E').protect();
   protection.setDescription('Formulas Do Not Change').setWarningOnly(true);
@@ -232,9 +222,9 @@ function ExportFormat_() {
 
 function Cleanup(){
   var name = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName();
-  if(name !== "SendSheet - .CSV" && name !== 'RockSolidSendSheet - .XLSX'){
+  if(name !== "SendSheet - .CSV" /*&& name !== 'RockSolidSendSheet - .XLSX'*/){
   Remove0QTY_();
-  RockSolidSendSheet_();
+  //RockSolidSendSheet_();
   }else{
     SpreadsheetApp.getUi().alert("Please use this on the original document");
   }
@@ -268,7 +258,7 @@ function Remove0QTY_(){
 
   spreadsheet.setActiveSheet(spreadsheet.getSheetByName(name), true);
 }
-
+/*
 function RockSolidSendSheet_(){
   var spreadsheet = SpreadsheetApp.getActive();
   var name = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName();
@@ -316,15 +306,12 @@ function RockSolidSendSheet_(){
 };
 
 function downloadXLS_GUI() {
-  var name = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet().getName();
-  if(name === 'RockSolidSendSheet - .XLSX'){
-    var ssID = SpreadsheetApp.getActive().getId();
-    var gid = SpreadsheetApp.getActive().getSheetId();
-    var url = 'https://docs.google.com/spreadsheets/d/'+ssID+'/export?format=xlsx&gid='+ gid;
-    var html = '<a href="' + url + '" target="_blank" download>Download XLSX</a>';
-    SpreadsheetApp.getUi().showModalDialog(HtmlService.createHtmlOutput(html), 'Download');
-  }else{
-    SpreadsheetApp.getUi().alert("Please go to RockSolidSendSheet - .XLSX to download");
-  }
-  
+  var spreadsheet = SpreadsheetApp.getActive();
+  spreadsheet.setActiveSheet(spreadsheet.getSheetByName('RockSolidSendSheet - .XLSX'), true);
+  var ssID = spreadsheet.getId();
+  var gid = spreadsheet.getSheetId();
+  var url = 'https://docs.google.com/spreadsheets/d/'+ssID+'/export?format=xlsx&gid='+ gid;
+  var html = '<a href="' + url + '" target="_blank" download>Download XLSX</a>';
+  SpreadsheetApp.getUi().showModalDialog(HtmlService.createHtmlOutput(html), 'Download');
 };
+*/
