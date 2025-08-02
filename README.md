@@ -10,14 +10,11 @@ a macro for do it bess catelog for easy modifing in google sheets for the year 2
 6. go back to google sheet and refresh page
 8. import the .csv file you got from do it bess by file -> import -> upload -> file downloaded
 9. choose replace spreadsheet
-10. click the newly created macro menu -> 1-Format
+10. click the newly created macro menu -> 1- Editing Format
 11. edit cart to desired outcome
-12. Click macro menu -> 2-DownloadFormat
+12. Click macro menu -> 2- Post-Editing Format
 13. click on the "sendsheet-.CSV" tab at the bottom of the and download as a .csv by clicking File -> downloads ->.CSV 
 14. go back to Doit cart and bulk upload the new .csv
-
-15. go back to google sheets and to the rocksolid tab
-16. download the file into whatever format for you POS and send it there to update the price of the products.
 
 ## Recommendation
 
