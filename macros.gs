@@ -112,16 +112,19 @@ function Format() {
   spreadsheet.getRange('L9').setFormula('=Sum(L6-L3)');
   spreadsheet.getRange('L11').setValue('Total SKUs');
   spreadsheet.getRange('L12').setFormula('=COUNTA(B2:B) - COUNTIF(B2:B, 0)');
+  spreadsheet.getRange('L14').setValue('Avg Margin');
+  spreadsheet.getRange('L15').setFormula('=AVERAGE(H:H)');
   
   // total/sum modification
   spreadsheet.getRange('L2:L3').setBackground('#ffff00');
   spreadsheet.getRange('L5:L6').setBackground('#6d9eeb');
   spreadsheet.getRange('L8:L9').setBackground('#00ff00');
   spreadsheet.getRange('L11:L12').setBackground('#fbbc04');
+  spreadsheet.getRange('L14:L15').setBackground('#d5a6bd');
 
-  spreadsheet.getRangeList(['L2:L3', 'L5:L6', 'L8:L9', 'L11:L12']).activate();
+  spreadsheet.getRangeList(['L2:L3', 'L5:L6', 'L8:L9', 'L11:L12', 'L14:L15']).activate();
   spreadsheet.getActiveRangeList().setBorder(true, true, true, true, true, true, '#000000', SpreadsheetApp.BorderStyle.SOLID_MEDIUM)
-  spreadsheet.getRangeList(['L3', 'L6', 'L9', 'L12']).activate()
+  spreadsheet.getRangeList(['L3', 'L6', 'L9', 'L12', 'L15']).activate()
   .setFontWeight('bold');
 
   // borders on all cells and changing color
