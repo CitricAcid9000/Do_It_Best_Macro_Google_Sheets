@@ -16,6 +16,11 @@ function Format() {
   var spreadsheet = SpreadsheetApp.getActive();
   var final = spreadsheet.getDataRange().getLastRow();
 
+  // check first column for promotionName
+  if(spreadsheet.getRange("A1").getValue() === "promotionName")
+  {
+      spreadsheet.deleteColumn(1);
+  }
   // Move Columns
   spreadsheet.getRange('B:B').copyTo(spreadsheet.getRange('P:P'), SpreadsheetApp.CopyPasteType.PASTE_NORMAL, false);
   spreadsheet.getActiveSheet().moveColumns(spreadsheet.getRange('K:K'), 2);
