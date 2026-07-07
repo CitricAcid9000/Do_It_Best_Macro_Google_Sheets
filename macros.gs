@@ -66,7 +66,6 @@ function Format() {
   spreadsheet.getActiveRangeList().setNumberFormat('0.00%');  
 
   // Conditional colors  
-  var spreadsheet = SpreadsheetApp.getActive();
   spreadsheet.getRange('H:H').activate();
   var conditionalFormatRules = spreadsheet.getActiveSheet().getConditionalFormatRules();
   conditionalFormatRules.splice(0, 1, SpreadsheetApp.newConditionalFormatRule()
@@ -119,18 +118,57 @@ function Format() {
   spreadsheet.getRange('L12').setFormula('=COUNTA(B2:B) - COUNTIF(B2:B, 0)');
   spreadsheet.getRange('L14').setValue('Avg Margin');
   spreadsheet.getRange('L15').setFormula('=AVERAGE(H:H)');
-  
+  spreadsheet.getRange('M14').setValue('Margin Goal');
+  spreadsheet.getRange('M15').setValue('0.35-0.45');
   // total/sum modification
   spreadsheet.getRange('L2:L3').setBackground('#ffff00');
   spreadsheet.getRange('L5:L6').setBackground('#6d9eeb');
   spreadsheet.getRange('L8:L9').setBackground('#00ff00');
   spreadsheet.getRange('L11:L12').setBackground('#fbbc04');
-  spreadsheet.getRange('L14:L15').setBackground('#d5a6bd');
+  spreadsheet.getRange('L14:M15').setBackground('#AB66AB');
 
-  spreadsheet.getRangeList(['L2:L3', 'L5:L6', 'L8:L9', 'L11:L12', 'L14:L15']).activate();
+  spreadsheet.getRangeList(['L2:L3', 'L5:L6', 'L8:L9', 'L11:L12', 'L14:M15']).activate();
   spreadsheet.getActiveRangeList().setBorder(true, true, true, true, true, true, '#000000', SpreadsheetApp.BorderStyle.SOLID_MEDIUM)
-  spreadsheet.getRangeList(['L3', 'L6', 'L9', 'L12', 'L15']).activate()
+  spreadsheet.getRangeList(['L3', 'L6', 'L9', 'L12', 'L15', 'M15']).activate()
   .setFontWeight('bold');
+
+  // Margins total Conditional Colors
+  spreadsheet.getRange('L14:M15').activate();
+  var conditionalFormatRules2 = spreadsheet.getActiveSheet().getConditionalFormatRules();
+  conditionalFormatRules2.splice(5, 1, SpreadsheetApp.newConditionalFormatRule()
+ .setRanges([spreadsheet.getRange('L14:M15')])
+  .whenNumberLessThanOrEqualTo(0.32)
+  .setBackground('#FF0000')
+  .build());
+  spreadsheet.getActiveSheet().setConditionalFormatRules(conditionalFormatRules2);
+  conditionalFormatRules2 = spreadsheet.getActiveSheet().getConditionalFormatRules();
+  conditionalFormatRules2.splice(6, 1, SpreadsheetApp.newConditionalFormatRule()
+ .setRanges([spreadsheet.getRange('L14:M15')])
+  .whenNumberBetween(0.32, 0.34)
+  .setBackground('#FFFF00')
+  .build());
+ spreadsheet.getActiveSheet().setConditionalFormatRules(conditionalFormatRules2);
+  conditionalFormatRules2 = spreadsheet.getActiveSheet().getConditionalFormatRules();
+  conditionalFormatRules2.splice(7, 1, SpreadsheetApp.newConditionalFormatRule()
+ .setRanges([spreadsheet.getRange('L14:M15')])
+  .whenNumberBetween(0.34, 0.35)
+  .setBackground('#88FF88')
+  .build());
+   spreadsheet.getActiveSheet().setConditionalFormatRules(conditionalFormatRules2);
+  conditionalFormatRules2 = spreadsheet.getActiveSheet().getConditionalFormatRules();
+  conditionalFormatRules2.splice(8, 1, SpreadsheetApp.newConditionalFormatRule()
+ .setRanges([spreadsheet.getRange('L14:M15')])
+  .whenNumberBetween(0.35, 0.45)
+  .setBackground('#00FF00')
+  .build());
+  spreadsheet.getActiveSheet().setConditionalFormatRules(conditionalFormatRules2);
+  conditionalFormatRules2 = spreadsheet.getActiveSheet().getConditionalFormatRules();
+  conditionalFormatRules2.splice(9, 1, SpreadsheetApp.newConditionalFormatRule()
+ .setRanges([spreadsheet.getRange('L14:M15')])
+  .whenNumberGreaterThanOrEqualTo(0.45)
+  .setBackground('#009900')
+  .build());
+  spreadsheet.getActiveSheet().setConditionalFormatRules(conditionalFormatRules2);
 
   // borders on all cells and changing color
   spreadsheet.getRange('A1:K'+final).activate();
@@ -165,7 +203,7 @@ function Format() {
   .setFontColor('#ff0000');
 
   // all column changes
-  spreadsheet.getRange('A:L').activate();
+  spreadsheet.getRange('A:M').activate();
   spreadsheet.getActiveRangeList().setHorizontalAlignment('center');
   spreadsheet.getActiveRangeList().setFontSize(12);
   spreadsheet.getActiveSheet().autoResizeColumns(1, 12);
